@@ -1,0 +1,10 @@
+version: '3.3'
+services:
+  cas:
+    image: mental/cas
+    container_name: cas
+    build: .
+    ports:
+      - "10000:10000"
+    environment:
+      SPRING_PROFILES_ACTIVE: native

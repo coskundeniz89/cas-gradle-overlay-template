@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- Specify the refresh internal in seconds. -->
+<Configuration monitorInterval="5" packages="org.apereo.cas.logging">
+    <Appenders>
+        <Console name="console" target="SYSTEM_OUT">
+            <PatternLayout pattern="%d %p [%c] - &lt;%m&gt;%n"/>
+        </Console>
+
+        <RollingFile name="file" fileName="/app/logs/cas/cas.log" append="true"
+                     filePattern="/app/logs/cas/cas-%d{yyyy-MM-dd-HH}-%i.log">
+            <PatternLayout pattern="%d %p [%c] - &lt;%m&gt;%n"/>
+            <Policies>
+                <OnStartupTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+                <TimeBasedTriggeringPolicy/>
+            </Policies>
+        </RollingFile>
+        <RollingFile name="auditlogfile" fileName="/app/logs/cas/audit/cas_audit.log" append="true"
+                     filePattern="/app/logs/cas/cas_audit-%d{yyyy-MM-dd-HH}-%i.log">
+            <PatternLayout pattern="%d %p [%c] - %m%n"/>
+            <Policies>
+                <OnStartupTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+                <TimeBasedTriggeringPolicy/>
+            </Policies>
+        </RollingFile>
+
+        <RollingFile name="perfFileAppender" fileName="/app/logs/cas/perfStats/perfStats.log" append="true"
+                     filePattern="/app/logs/cas/perfStats/perfStats-%d{yyyy-MM-dd-HH}-%i.log">
+            <PatternLayout pattern="%m%n"/>
+            <Policies>
+                <OnStartupTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+                <TimeBasedTriggeringPolicy/>
+            </Policies>
+        </RollingFile>
+
+        <CasAppender name="casFile">
+            <AppenderRef ref="file"/>
+        </CasAppender>
+        <CasAppender name="casConsole">
+            <AppenderRef ref="console"/>
+        </CasAppender>
+    </Appenders>
+    <Loggers>
+        <AsyncRoot level="warn">
+            <AppenderRef ref="casConsole"/>
+            <AppenderRef ref="casFile"/>
+        </AsyncRoot>
+    </Loggers>
+</Configuration>

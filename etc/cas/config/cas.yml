@@ -1,0 +1,19 @@
+server:
+  port: 10000
+
+spring:
+  mvc:
+    locale: tr_TR
+
+cas:
+#  authn:
+#    accept:
+#      users:
+  adminPagesSecurity:
+    ip: 127\.0\.0\.1
+  ticket:
+    tgt:
+      rememberMe:
+        enabled: true
+  locale:
+    defaultValue: tr

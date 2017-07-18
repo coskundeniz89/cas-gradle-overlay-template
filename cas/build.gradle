@@ -2,15 +2,11 @@ apply plugin: 'org.springframework.boot'
 apply from: 'http://dl.bintray.com/scalding/generic/waroverlay.gradle'
 apply from: 'https://raw.githubusercontent.com/apereo/cas/5.1.x/gradle/overrides.gradle'
 
-apply plugin: 'eclipse'
-apply plugin: 'idea'
-
-eclipse {
-    classpath {
-       downloadSources = true
-       downloadJavadoc = true
-    }
+ext {
+    isWindows = System.getProperty("os.name").toLowerCase().contains("windows")
 }
+
+apply plugin: 'idea'
 
 idea {
     module {
@@ -41,13 +37,22 @@ repositories {
 
 dependencies {
     compile "org.apereo.cas:cas-server-webapp-tomcat:${project.'cas.version'}@war"
+    compile "org.apereo.cas:cas-server-support-ldap:${project.'cas.version'}"
+    compile "org.apereo.cas:cas-server-support-rest:${project.'cas.version'}"
 }
 
 task copyConfig(type: Copy) {
-    println "Copying configuration to /etc/cas/config"
-    from "${project.rootDir}/etc/cas/config"
-    into '/etc/cas/config'
+    println "Copying configuration to /etc"
+    from "${project.rootDir}/etc"
+    if (isWindows) {
+        into configFileWindows
+    } else {
+        into configFileLinux
+    }
 }
+//Bamboo build edilirken copyConfig yapmaması gerekiyor.
+//Bamboo taskı "gradlew clean build -PskipCopyConfig"
+copyConfig.onlyIf { !project.hasProperty('skipCopyConfig') }
 
 war {
     dependsOn copyConfig
@@ -125,7 +130,7 @@ task debug {
             args = [
                 "build/libs/cas.war",
                 ]
-                
+
             println "Started ${commandLine}"
         }
     }

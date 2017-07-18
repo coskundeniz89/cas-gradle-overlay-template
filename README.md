@@ -27,86 +27,42 @@ dependencies {
 }
 ```
 
-Study material:
-
-- https://docs.gradle.org/current/userguide/artifact_dependencies_tutorial.html
-- https://docs.gradle.org/current/userguide/dependency_management.html
-
 ## Build
 
 ```bash
-./gradlew[.bat] clean build
-```
-
-Faster builds on subsequent attempts once modules/dependencies are resolved:
-
-```bash
-./gradlew[.bat] clean build --parallel --offline
-```
-
-Note: A number of options can be made default in `gradle.properties`. For example, `--parallel` can be defaulted via  `org.gradle.parallel=true`.
-
-### Updating SNAPSHOT Builds
-
-If you are on a `SNAPSHOT` version, you can force re-downloads of modules/dependencies:
-
-```bash
- ./gradlew[.bat] clean build --parallel --refresh-dependencies
-```
-
-### Clear Gradle Cache
-
-If you need to, on Linux/Unix systems, you can delete all the existing artifacts (artifacts and metadata)
-Gradle has downloaded using:
-
-```bash
-# Only do this when absolutely necessary!
-rm -rf $HOME/.gradle/caches/
-```
-
-Same strategy applies to Windows too, provided you switch `$HOME` to its equivalent in the above command.
-
-### Build Tasks
-
-To see what commands are available in the build, use:
-
-```bash
- ./gradlew[.bat] tasks
-```
-
-### Project Dependencies
-
-To see where certain dependencies come from in the build:
-
-```bash
-# Show the surrounding 2 before/after lines once a match is found
- ./gradlew[.bat] allDependencies | grep -A 2 -B 2 xyz
-```
-
-Or:
-
-```bash
-./gradlew[.bat] allDependenciesInsight --configuration [compile|runtime] --dependency xyz
+gradlew clean build
 ```
 
 ## Deployment
-
-- Create a keystore file `thekeystore` under `/etc/cas` on Linux. Use `c:/etc/cas` on Windows.
+- If you use `gradlew build`, gradle will copy [etc](etc/) folder to host machine.  
+- or
+- Create a keystore file `cas` under [/etc/keystore](/etc/keystore) on Linux. Use [C:/etc/keystore](/C:/etc/keystore) on Windows.
 - Use the password `changeit` for both the keystore and the key/certificate entries.
 - Ensure the keystore is loaded up with keys and certificates of the server.
-    - Add the following to ./etc/cas/config/cas.properties
-    ```
-    server.ssl.keyStore=file:/etc/cas/thekeystore
-    server.ssl.keyStorePassword=changeit
-    server.ssl.keyPassword=changeit
-    ```
 
 On a successful deployment via the following methods, CAS will be available at:
 
-* `http://cas.server.name:8080/cas`
-* `https://cas.server.name:8443/cas`
+* `https://server.name:10000/cas`
 
-### Executable WAR
+
+###### Example
+
+Local server [https://localhost:10000/cas](https://localhost:10000/cas)
+
+### Https Error
+
+If you see this error on google chrome:
+
+Your connection is not private
+
+Attackers might be trying to steal your information from localhost (for example, passwords, messages, or credit cards). NET::ERR_CERT_COMMON_NAME_INVALID
+
+* Browse this option  [chrome://flags/#allow-insecure-localhost](chrome://flags/#allow-insecure-localhost)
+
+and enable.
+
+
+## Executable WAR
 
 Run the CAS web application as an executable WAR.
 
@@ -114,7 +70,19 @@ Run the CAS web application as an executable WAR.
 java -jar cas/build/libs/cas.war
 ```
 
-Or via Gradle:
+##### Environment
+`native` environment must be absolutely in spring.profiles.active variable.
+
+If you use other environment, you must pass this variable to command
+`--spring.profiles.active=native,qa`
+
+###### Example 
+<pre><code>
+java -jar  cas/build/libs/cas.war --spring.profiles.active=native,qa
+</code></pre>
+
+
+### Or via Gradle:
 
 ```bash
 # You need to check your project path into cas/build.gradle for this command
@@ -129,44 +97,53 @@ Run the CAS web application as an executable WAR via Spring Boot. This is most u
 ./gradlew[.bat] bootrun
 ```
 
-#### Warning!
+## External
 
-Be careful with this method of deployment. `bootRun` is not designed to work with already executable WAR artifacts such that CAS server web application. YMMV. Today, uses of this mode ONLY work when there is **NO OTHER** dependency added to the build script and the `cas-server-webapp` is the only present module. See [this issue](https://github.com/apereo/cas/issues/2334) and [this issue](https://github.com/spring-projects/spring-boot/issues/8320) for more info.
-
-### External
-
-Deploy resultant `cas/build/libs/cas.war` to a servlet container of choice.
-
-## Troubleshooting
-
-You can also run the CAS server in `DEBUG` mode to step into the code
-via an IDE that is able to connect to the port `5005`.
-
-```bash
-./gradlew[.bat] debug
-```
-
-To setup a development environment for either eclipse or IDEA:
-
-```bash
-# ./gradlew[.bat] eclipse
-# ./gradlew[.bat] idea
-```
-
-The above tasks help to setup a project for your development environment. If you find that something has gone wrong, you can always start anew by using the following:
-
-```bash
-# ./gradlew[.bat] cleanEclipse
-# ./gradlew[.bat] cleanIdea
-```
+Deploy resultant [cas/build/libs/](cas/build/libs/) to a servlet container of choice.
 
 
-## Explode WAR
+# Docker
+### Build
+You can build from docker-compose file.
 
-You may explode/unzip the generated CAS web application if you wish to peek into the artifact
-to examine dependencies, configuration files and such that are merged as part of the overlay build process.
+<pre><code>
+docker-compose build
+</code></pre>
+  
+or 
+  
+<pre><code>
+docker build -t mental/cas .
+</code></pre>
+  
+### Run with compose
+<pre><code>
+docker-compose up
+</code></pre>
+##### Environment for compose
+If you use other environment, you must change [docker-compose.yml](docker-compose.yml)
+###### Example 
+<pre><code>
+    .
+    .
+    environment:
+      SPRING_PROFILES_ACTIVE: native,qa
+    .
+    .
+</code></pre>
 
-```bash
-./gradlew[.bat] explodeWar
-```
+
+### Run with command  
+<pre><code>
+docker run -d -p 10000:10000 mental/cas
+</code></pre>
+
+##### Environment for docker run
+If you use other environment, you must pass this variable to command.
+`-e SPRING_PROFILES_ACTIVE=native,qa`
+
+###### Example 
+<pre><code>
+docker run -e SPRING_PROFILES_ACTIVE=native,qa -p 10000:10000 mental/cas
+</code></pre>
 

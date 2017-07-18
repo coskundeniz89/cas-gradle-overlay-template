@@ -1,0 +1,11 @@
+{
+  "@class": "org.apereo.cas.services.RegexRegisteredService",
+  "serviceId": "^https://.",
+  "name": "Proxy Auth",
+  "id": 10000003,
+  "description": "For proxy authentication.",
+  "proxyPolicy": {
+    "@class": "org.apereo.cas.services.RegexMatchingRegisteredServiceProxyPolicy",
+    "pattern": "^https?://.*"
+  }
+}
