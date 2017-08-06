@@ -1,14 +1,11 @@
 server:
-  port: 10000
+  port: 10010
 
 spring:
   mvc:
     locale: tr_TR
 
 cas:
-#  authn:
-#    accept:
-#      users:
   adminPagesSecurity:
     ip: 127\.0\.0\.1
   ticket:
@@ -17,3 +14,10 @@ cas:
         enabled: true
   locale:
     defaultValue: tr
+  authn:
+    accept:
+      users:
+    rest:
+      uri: https://localhost:10000/login/
+      passwordEncoder:
+        type: NONE

@@ -1,12 +1,14 @@
 logging:
-  config: file:/etc/cas/config/log/log4j2.xml
+  file: logs/cas/app.log
+  level:
+    root: INFO
 
 cas:
   view:
-    defaultRedirectUrl: https://localhost:8443/
+    defaultRedirectUrl: https://localhost:20000/
 
 server:
   ssl:
-    key-store: file:/etc/keystore/localhost.jks
+    key-store: classpath:keystore/thekeystore.jks
     key-store-password: changeit
     key-password: changeit

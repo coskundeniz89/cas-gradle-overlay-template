@@ -3,6 +3,28 @@ CAS Gradle Overlay
 Generic CAS gradle war overlay to exercise the latest versions of CAS. This overlay could be freely
 used as a starting template for local CAS gradle war overlays.
 
+# Dependency
+- Mental Login - Login servisineihtiyaç duymaktadır.
+- Mental Authentication - Authentication Dbsine ihtiyaç duymaktadır.
+- Mental User - Kullanıcı adından kullanıcı idsini getirmelidir.
+- Postgresql - Authentication Dbsi
+
+### Run postgresql before cas
+<code>docker run --name cont_postgresql 
+-itd -p 5432:5432 --restart always 
+-e DB_NAME=authentication-dev,authentication-qa 
+-e DB_USER=dbuser -e DB_PASS=12345 sameersbn/postgresql</code>
+
+### Run authentication before cas
+<code>docker run -it --name cont_authentication -p 10020:10020 
+--link cont_postgresql mental/authentication</code>
+
+
+### Run login before cas
+<code>docker run -it --name cont_login -p 10000:10000 
+--link cont_postgresql mental/login</code>
+
+
 ## Versions
 
 * CAS 5.1.x
@@ -42,12 +64,12 @@ gradlew clean build
 
 On a successful deployment via the following methods, CAS will be available at:
 
-* `https://server.name:10000/cas`
+* `https://server.name:10010/cas`
 
 
 ###### Example
 
-Local server [https://localhost:10000/cas](https://localhost:10000/cas)
+Local server [https://localhost:10010/cas](https://localhost:10010/cas)
 
 ### Https Error
 
@@ -135,7 +157,7 @@ If you use other environment, you must change [docker-compose.yml](docker-compos
 
 ### Run with command  
 <pre><code>
-docker run -d -p 10000:10000 mental/cas
+docker run -d -p 10010:10010 mental/cas
 </code></pre>
 
 ##### Environment for docker run
@@ -144,6 +166,6 @@ If you use other environment, you must pass this variable to command.
 
 ###### Example 
 <pre><code>
-docker run -e SPRING_PROFILES_ACTIVE=native,qa -p 10000:10000 mental/cas
+docker run -e SPRING_PROFILES_ACTIVE=native,qa -p 10010:10010 mental/cas
 </code></pre>
 

@@ -2,9 +2,38 @@ version: '3.3'
 services:
   cas:
     image: mental/cas
-    container_name: cas
     build: .
     ports:
-      - "10000:10000"
+      - "10010:10010"
+    depends_on:
+      - web_login
     environment:
       SPRING_PROFILES_ACTIVE: native
+  web_login:
+    image: mental/login
+    ports:
+      - "10000:10000"
+    links:
+      - cont_postgresql
+    depends_on:
+      - web_authentication
+    environment:
+      SPRING_PROFILES_ACTIVE: default
+  web_authentication:
+    image: mental/authentication
+    ports:
+      - "10020:10020"
+    links:
+      - cont_postgresql
+    depends_on:
+      - cont_postgresql
+    environment:
+      SPRING_PROFILES_ACTIVE: default
+  cont_postgresql:
+    image: sameersbn/postgresql
+    ports:
+      - "5432:5432"
+    environment:
+      DB_NAME: authentication-dev,authentication-qa
+      DB_USER: dbuser
+      DB_PASS: 12345
